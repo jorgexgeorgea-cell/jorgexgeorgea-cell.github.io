@@ -3,28 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgOptimizador - Convierte y Comprime Gratis</title>
+    <title>ImgOptimizador - Drag & Drop Activo</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen flex flex-col items-center py-10 px-4">
 
-    <div class="w-full max-w-4xl h-24 bg-slate-800/50 border border-dashed border-slate-700 rounded-lg mb-8 flex items-center justify-center text-slate-500 text-xs uppercase tracking-widest">
-        Publicidad - Espacio Disponible
-    </div>
-
     <div class="w-full max-w-2xl bg-[#1e293b] p-8 rounded-3xl shadow-2xl border border-slate-700">
         <header class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-blue-400 mb-2">ImgOptimizador ⚡</h1>
-            <p class="text-slate-400 text-sm font-medium">Convierte tus fotos a WebP, JPG o PNG al instante y sin perder calidad.</p>
+            <h1 class="text-3xl font-extrabold text-blue-400 mb-2 italic">ImgOptimizador ⚡</h1>
+            <p class="text-slate-400 text-sm font-medium">Arrastra, convierte y descarga sin errores de red.</p>
         </header>
 
-        <div id="dropZone" class="border-2 border-dashed border-blue-500/40 bg-slate-900/50 rounded-2xl p-10 text-center hover:border-blue-400 transition cursor-pointer mb-6">
+        <div id="dropZone" class="border-2 border-dashed border-blue-500/40 bg-slate-900/50 rounded-2xl p-10 text-center hover:bg-slate-800/50 transition-all cursor-pointer mb-6 group">
             <input type="file" id="fileInput" class="hidden" accept="image/*">
-            <div class="flex flex-col items-center">
-                <span class="text-4xl mb-4">🖼️</span>
+            <div class="flex flex-col items-center pointer-events-none">
+                <span id="icon" class="text-4xl mb-4 group-hover:scale-110 transition">🖼️</span>
                 <p class="text-lg font-semibold text-blue-100">Arrastra tu imagen aquí</p>
-                <p class="text-xs text-slate-500 mt-2 italic font-sans">Soporta PNG, JPG, JPEG y WebP</p>
+                <p class="text-xs text-slate-500 mt-2 italic font-sans">O haz clic para buscar en tu PC</p>
             </div>
         </div>
 
-        <div id="options" class="hidden space-y-6 animate-in fade-in duration-500">
+        <div id="options" class="hidden space-y-6">
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <label class="block text-[10px] font-bold text-blue-300 uppercase mb-2">Formato</label>
+                    <select id="formatSelect" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 outline-none text-sm font-sans">
+                        <option value="image/webp">WebP</option>
+                        <option value="image/jpeg">JPEG</option>
+                        <option value="image/png">PNG</option>
+                    </select>
+                </div>
+                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
+                    <label class="block text-[10px] font-bold text-blue-300 uppercase mb-2">Calidad</label>
+                    <input type="range" id="qualityRange" min="0.1" max="1.0" step="0.1" value="0.8" class="w-full accent-blue-500">
+                </div>
+            </div>
+            <button onclick="procesarImagen()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold transition shadow-lg uppercase tracking-wider active:scale-95">
+                🚀 Convertir y Descargar
+            </button>
+            <button onclick="location.reload()" class="w-full text-slate-500 text-[10px] uppercase font-bold hover:text-white transition">Cargar otra imagen</button>
+        </div>
+
+        <div id="previewContainer" class="hidden mt-8 border-t border-slate-700 pt-6">
+            <img id="imagePreview" class="max-h-64 mx-auto rounded-lg shadow-lg border border-slate-700">
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const options = document.getElementById('options');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewContainer = document.getElementById('previewContainer');
+
+        // 1. Abrir explorador al hacer clic
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // 2. Detectar cuando arrastras algo sobre la zona
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
+        });
+
+        // Efecto visual al arrastrar
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.add('bg-blue-500/10', 'border-blue-400'), false);
+        });
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, () => dropZone.classList.remove('bg-blue-500/10', 'border-blue-400'), false);
+        });
+
+        // 3. Manejar la soltada (Drop) del archivo
+        dropZone.addEventListener('drop', e => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files[0]);
+        }, false);
+
+        // 4. Manejar selección por explorador de
