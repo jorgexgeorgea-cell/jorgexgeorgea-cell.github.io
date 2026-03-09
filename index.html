@@ -3,60 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Primera Web de Ganancias</title>
+    <title>EscribePro AI - Redactor Profesional</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-900 text-white font-sans flex items-center justify-center h-screen">
+<body class="bg-slate-900 text-white font-sans min-h-screen flex flex-col items-center py-12 px-4">
 
-    <div class="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md border border-gray-700">
-        <h1 class="text-2xl font-bold text-blue-400 mb-2 text-center">EscribePro AI 🚀</h1>
-        <p class="text-gray-400 text-sm mb-6 text-center">Tu generador de correos profesionales gratuito.</p>
+    <div class="text-center mb-10">
+        <h1 class="text-4xl font-extrabold text-blue-400 mb-2">EscribePro AI 🚀</h1>
+        <p class="text-gray-400 text-lg">Convierte tus ideas sueltas en correos profesionales e impecables.</p>
+    </div>
 
-        <label class="block mb-2 text-sm font-medium">¿Qué quieres escribir?</label>
-        <textarea id="prompt" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-white" rows="4" placeholder="Ej: Pedir permiso para faltar mañana..."></textarea>
+    <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-2xl border border-slate-700">
         
-        <button onclick="generar()" id="btn" class="w-full mt-4 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition-all transform active:scale-95">
-            Generar con IA
+        <div class="mb-6 text-center">
+            <label class="block mb-3 text-sm font-semibold text-blue-300 uppercase tracking-widest">¿Qué necesitas enviar?</label>
+            <p class="text-gray-400 mb-4 text-sm">Elige un ejemplo o escribe tu idea abajo:</p>
+            
+            <div class="flex flex-wrap gap-2 justify-center mb-6">
+                <button onclick="ponerEjemplo('Pedir un aumento de sueldo de forma diplomática')" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full border border-slate-500 transition">💰 Aumento</button>
+                <button onclick="ponerEjemplo('Renunciar a mi trabajo agradeciendo la oportunidad')" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full border border-slate-500 transition">👋 Renuncia</button>
+                <button onclick="ponerEjemplo('Pedir disculpas a un cliente por un retraso')" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full border border-slate-500 transition">📦 Retraso</button>
+            </div>
+        </div>
+
+        <textarea id="prompt" class="w-full p-4 bg-slate-900 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-white text-lg placeholder-gray-600" rows="5" placeholder="Ejemplo: Quiero pedir vacaciones para la próxima semana..."></textarea>
+        
+        <button onclick="generar()" id="btn" class="w-full mt-6 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all transform active:scale-95 text-lg">
+            ✨ Redactar Correo Ahora
         </button>
 
-        <div id="resultado" class="mt-6 p-4 bg-gray-900 rounded-lg hidden border border-blue-500/30">
-            <h2 class="text-blue-400 font-semibold mb-2 text-xs uppercase tracking-wider">Resultado:</h2>
-            <p id="textoRespuesta" class="text-gray-200 text-sm leading-relaxed"></p>
+        <div id="resultado" class="mt-8 p-6 bg-slate-900 rounded-xl hidden border-l-4 border-blue-500">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                <h2 class="text-blue-400 font-bold uppercase text-xs">Tu correo está listo:</h2>
+                <button onclick="copiarTexto()" class="text-xs bg-blue-900 text-blue-200 px-3 py-1 rounded-lg hover:bg-blue-800 border border-blue-700">📋 Copiar</button>
+            </div>
+            <p id="textoRespuesta" class="text-gray-200 text-md leading-relaxed whitespace-pre-wrap"></p>
+        </div>
+    </div>
+
+    <div class="mt-12 max-w-2xl grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+        <div class="p-4 bg-slate-800/50 rounded-xl">
+            <span class="text-2xl">⚡</span>
+            <h3 class="font-bold text-sm">Instantáneo</h3>
+        </div>
+        <div class="p-4 bg-slate-800/50 rounded-xl">
+            <span class="text-2xl">🔒</span>
+            <h3 class="font-bold text-sm">Seguro</h3>
+        </div>
+        <div class="p-4 bg-slate-800/50 rounded-xl">
+            <span class="text-2xl">🆓</span>
+            <h3 class="font-bold text-sm">100% Gratis</h3>
         </div>
     </div>
 
     <script>
+        function ponerEjemplo(texto) {
+            document.getElementById('prompt').value = texto;
+        }
+
         async function generar() {
             const prompt = document.getElementById('prompt').value;
             const btn = document.getElementById('btn');
             const resDiv = document.getElementById('resultado');
             const resTexto = document.getElementById('textoRespuesta');
 
-            // --- AQUÍ PEGAS TU API KEY ---
+            // Tu llave ya está instalada aquí:
             const MI_LLAVE = "AIzaSyB9Q0JEftzISUx2l_PRsbNOwsky3ujY3-I"; 
 
-            if(!prompt) return alert("Por favor, escribe algo.");
+            if(!prompt) return alert("Por favor, escribe una idea.");
 
-            btn.innerText = "Pensando...";
+            btn.innerText = "Escribiendo con IA...";
             btn.disabled = true;
+            resDiv.classList.add('hidden');
 
             try {
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${MI_LLAVE}`;
                 const response = await fetch(url, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: "Escribe un correo profesional sobre: " + prompt }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "Escribe un correo profesional, cordial y muy bien redactado sobre: " + prompt }] }] })
                 });
 
                 const data = await response.json();
-                resTexto.innerText = data.candidates[0].content.parts[0].text;
+                const respuestaIA = data.candidates[0].content.parts[0].text;
+                
+                resTexto.innerText = respuestaIA;
                 resDiv.classList.remove('hidden');
             } catch (e) {
-                alert("Error. Revisa que tu API Key sea correcta.");
+                alert("Hubo un pequeño error. Intenta de nuevo.");
             } finally {
-                btn.innerText = "Generar con IA";
+                btn.innerText = "✨ Redactar Correo Ahora";
                 btn.disabled = false;
             }
+        }
+
+        function copiarTexto() {
+            const texto = document.getElementById('textoRespuesta').innerText;
+            navigator.clipboard.writeText(texto).then(() => {
+                alert("¡Correo copiado al portapapeles!");
+            });
         }
     </script>
 </body>
