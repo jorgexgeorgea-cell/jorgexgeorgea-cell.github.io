@@ -3,77 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickMail Pro - Correos Temporales</title>
+    <title>QuickMail Pro - Selector de Dominios</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 font-sans min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-slate-900 font-sans min-h-screen flex flex-col items-center py-10 px-4 text-white">
 
-    <div class="bg-white p-8 rounded-3xl shadow-2xl w-full max-w-xl">
-        <h1 class="text-3xl font-extrabold text-slate-800 mb-2 text-center">QuickMail Pro ✉️</h1>
-        <p class="text-slate-500 text-center mb-8">Crea correos temporales personalizados para tu empresa o uso personal.</p>
+    <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-xl border border-slate-700">
+        <h1 class="text-3xl font-extrabold text-blue-400 mb-2 text-center">QuickMail Pro ✉️</h1>
+        <p class="text-slate-400 text-center mb-8 text-sm">Elige tu nombre y tu dominio de privacidad.</p>
 
-        <div class="bg-slate-50 p-4 rounded-xl mb-6 border border-slate-200">
-            <label class="block text-sm font-bold text-slate-700 mb-2 italic">¿Quieres un nombre específico?</label>
-            <div class="flex gap-2">
-                <input type="text" id="customName" placeholder="Ej: jorge.empresa" class="flex-1 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
-                <button onclick="genEmail()" class="bg-slate-800 text-white px-4 py-2 rounded-lg font-bold hover:bg-slate-700 transition">Aplicar</button>
-            </div>
-            <p class="text-[10px] text-slate-400 mt-2">* Si lo dejas vacío, será aleatorio.</p>
-        </div>
-
-        <div class="relative mb-8">
-            <input type="text" id="emailAddr" readonly class="w-full p-5 bg-blue-50 border-2 border-blue-200 rounded-2xl text-xl font-mono text-blue-700 text-center outline-none">
-            <button onclick="copyEmail()" class="absolute right-3 top-3 bg-blue-600 text-white p-2 px-4 rounded-xl hover:bg-blue-500 transition shadow-md">Copiar</button>
-        </div>
-
-        <div class="border-t border-slate-100 pt-6">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-bold text-slate-800 text-center w-full">Bandeja de Entrada</h2>
-            </div>
-            
-            <div id="loader" class="hidden flex justify-center mb-4">
-                <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                <span class="ml-2 text-blue-600 text-sm">Buscando mensajes...</span>
-            </div>
-
-            <div id="emailsList" class="space-y-4">
-                <div class="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                    <p class="text-slate-400">Esperando mensajes para este correo...</p>
+        <div class="bg-slate-700 p-6 rounded-xl mb-6 border border-slate-600">
+            <div class="grid grid-cols-1 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-blue-300 mb-2 uppercase tracking-wider">Nombre</label>
+                    <input type="text" id="customName" placeholder="ej: jorge.pro" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white">
                 </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-blue-300 mb-2 uppercase tracking-wider">Dominio</label>
+                    <select id="domainChoice" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                        <option value="1secmail.com">@1secmail.com</option>
+                        <option value="1secmail.org">@1secmail.org</option>
+                        <option value="1secmail.net">@1secmail.net</option>
+                        <option value="vmani.com">@vmani.com</option>
+                        <option value="wwjmp.com">@wwjmp.com</option>
+                    </select>
+                </div>
+
+                <button onclick="genEmail()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-500 transition shadow-lg">Actualizar Correo</button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 p-5 rounded-2xl border-2 border-blue-500/50 mb-8 relative">
+            <input type="text" id="emailAddr" readonly class="w-full bg-transparent text-xl font-mono text-blue-400 text-center outline-none">
+            <button onclick="copyEmail()" class="mt-4 w-full bg-slate-700 hover:bg-slate-600 text-white py-2 rounded-xl text-sm transition">Copiar Dirección</button>
+        </div>
+
+        <div class="border-t border-slate-700 pt-6">
+            <h2 class="text-xl font-bold text-slate-200 text-center mb-4">Bandeja de Entrada</h2>
+            <div id="loader" class="hidden text-center text-blue-400 text-xs mb-4 animate-pulse">Buscando mensajes...</div>
+            <div id="emailsList" class="space-y-4">
+                <div class="text-center py-10 bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-700 text-slate-500 text-sm">Esperando mensajes entrantes...</div>
             </div>
         </div>
     </div>
 
     <script>
         let currentEmail = "";
-        const domain = "1secmail.com";
         let timer = null;
 
         function genEmail() {
             const custom = document.getElementById('customName').value.trim().toLowerCase();
-            let name = "";
-
-            if(custom) {
-                // Limpiar el texto para que solo tenga letras y números
-                name = custom.replace(/[^a-z0-9.]/g, '');
-            } else {
-                const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
-                for(let i=0; i<8; i++) name += chars[Math.floor(Math.random() * chars.length)];
-            }
-
-            currentEmail = name + "@" + domain;
+            const selectedDomain = document.getElementById('domainChoice').value;
+            let name = custom ? custom.replace(/[^a-z0-9.]/g, '') : Math.random().toString(36).substring(2, 10);
+            
+            currentEmail = `${name}@${selectedDomain}`;
             document.getElementById('emailAddr').value = currentEmail;
-            document.getElementById('emailsList').innerHTML = '<div class="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200"><p class="text-slate-400">Bandeja vacía.</p></div>';
+            document.getElementById('emailsList').innerHTML = '<div class="text-center py-10 bg-slate-900/50 rounded-2xl border-2 border-dashed border-slate-700 text-slate-500 text-sm">Buscando en este nuevo correo...</div>';
             
             if(timer) clearInterval(timer);
             checkMail();
-            timer = setInterval(checkMail, 5000); // Revisa cada 5 segundos
-        }
-
-        function copyEmail() {
-            const el = document.getElementById('emailAddr');
-            navigator.clipboard.writeText(el.value);
-            alert("¡Correo copiado!");
+            timer = setInterval(checkMail, 5000);
         }
 
         async function checkMail() {
@@ -86,21 +76,24 @@
                 const emails = await res.json();
                 const list = document.getElementById('emailsList');
 
-                if(emails.length > 0) {
+                if(emails && emails.length > 0) {
                     list.innerHTML = "";
                     emails.forEach(mail => {
                         list.innerHTML += `
-                            <div class="p-4 bg-white border border-blue-100 rounded-xl shadow-sm hover:border-blue-400 transition cursor-pointer">
-                                <p class="text-xs text-blue-500 font-bold uppercase mb-1">Nuevo Mensaje</p>
-                                <p class="text-sm text-slate-800"><strong>De:</strong> ${mail.from}</p>
-                                <p class="text-sm text-slate-600"><strong>Asunto:</strong> ${mail.subject}</p>
+                            <div class="p-4 bg-slate-700 border-l-4 border-blue-500 rounded-r-xl shadow-md">
+                                <p class="text-xs text-blue-400 font-bold mb-1 italic">DE: ${mail.from}</p>
+                                <p class="text-sm text-white">${mail.subject}</p>
                             </div>
                         `;
                     });
                 }
-            } catch (e) { console.log("Error al conectar"); }
-            
+            } catch (e) { console.error("Error"); }
             document.getElementById('loader').classList.add('hidden');
+        }
+
+        function copyEmail() {
+            navigator.clipboard.writeText(document.getElementById('emailAddr').value);
+            alert("¡Copiado!");
         }
 
         window.onload = genEmail;
