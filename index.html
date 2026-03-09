@@ -3,46 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProMail Express - Privacidad Total</title>
+    <title>ProMail Pro - Sincronizado</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 font-sans min-h-screen flex flex-col items-center py-10 px-4 text-white text-center">
+<body class="bg-[#0f172a] font-sans min-h-screen flex flex-col items-center py-10 px-4 text-white">
 
-    <div class="bg-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-xl border border-slate-700">
-        <h1 class="text-3xl font-extrabold text-blue-400 mb-6 italic">ProMail Pro 🚀</h1>
+    <div class="bg-[#1e293b] p-8 rounded-3xl shadow-2xl w-full max-w-xl border border-slate-700">
+        <h1 class="text-3xl font-extrabold text-blue-400 mb-6 text-center italic">ProMail Pro 🚀</h1>
         
-        <div class="bg-slate-700 p-6 rounded-xl mb-6 border border-slate-600 text-left">
-            <label class="block text-xs font-bold text-blue-300 mb-2 uppercase tracking-widest">Nombre del correo</label>
-            <input type="text" id="userInput" placeholder="Ej: jorge.andres" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg outline-none text-white mb-4 focus:ring-2 focus:ring-blue-500">
-            
-            <label class="block text-xs font-bold text-blue-300 mb-2 uppercase tracking-widest">Servidor Profesional</label>
+        <div class="bg-[#334155] p-6 rounded-xl mb-6 border border-slate-600">
+            <input type="text" id="userInput" placeholder="Nombre personalizado..." class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg outline-none text-white mb-4 focus:ring-2 focus:ring-blue-500">
             <select id="domainSelect" class="w-full p-3 bg-slate-900 border border-slate-600 rounded-lg outline-none text-white mb-6">
                 <option value="1secmail.com">@1secmail.com</option>
                 <option value="1secmail.org">@1secmail.org</option>
                 <option value="vmani.com">@vmani.com</option>
             </select>
-            
-            <button onclick="generarTodo()" class="w-full bg-blue-600 py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg uppercase text-lg active:scale-95">
+            <button onclick="generarTodo()" class="w-full bg-blue-600 py-4 rounded-xl font-bold hover:bg-blue-500 transition shadow-lg uppercase tracking-tighter active:scale-95">
                 ⚡ ACTIVAR BANDEJA
             </button>
         </div>
 
-        <div class="bg-slate-950 p-6 rounded-2xl border-2 border-blue-600 mb-8 relative shadow-[0_0_20px_rgba(59,130,246,0.2)]">
+        <div class="bg-slate-950 p-6 rounded-2xl border-2 border-blue-500/50 mb-8 relative">
             <input type="text" id="finalEmail" readonly class="w-full bg-transparent text-xl font-mono text-blue-400 text-center outline-none font-bold" value="CREA TU CORREO">
-            <button onclick="copiarTexto()" id="btnCopiar" class="mt-4 text-blue-300 text-xs font-bold uppercase hidden hover:underline">Copiar Dirección</button>
+            <button onclick="copiarTexto()" id="btnCopiar" class="mt-4 w-full text-blue-300 text-[10px] font-bold uppercase hidden hover:underline">Copiar Dirección</button>
         </div>
 
         <div class="border-t border-slate-700 pt-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-slate-200 uppercase text-xs font-bold tracking-tighter italic">Bandeja de Entrada</h2>
+                <h2 class="text-slate-200 uppercase text-[10px] font-bold tracking-widest italic">Bandeja de Entrada</h2>
                 <div id="signal" class="text-[9px] text-slate-500 font-bold uppercase flex items-center">
                     <div id="dot" class="h-2 w-2 bg-slate-600 rounded-full mr-2"></div>
-                    Sincronizando...
+                    <span id="statusText">Inactivo</span>
                 </div>
             </div>
-            
-            <div id="msgList" class="space-y-3 text-center text-slate-500 text-sm py-8 border-2 border-dashed border-slate-700 rounded-2xl">
-                Esperando el primer mensaje...
+            <div id="msgList" class="space-y-3 text-center text-slate-500 text-xs py-10 border-2 border-dashed border-slate-700 rounded-2xl">
+                Esperando activación...
             </div>
         </div>
     </div>
@@ -56,13 +51,14 @@
             const dominio = document.getElementById('domainSelect').value;
             const randomNums = Math.floor(1000 + Math.random() * 9000);
             
-            // Lógica de nombre + 4 números aleatorios
-            let base = nombre ? nombre.replace(/[^a-z0-9]/g, '') + randomNums : Math.random().toString(36).substring(2, 10);
+            let base = nombre ? nombre.replace(/[^a-z0-9.]/g, '') + randomNums : Math.random().toString(36).substring(2, 10);
             correoActual = base + "@" + dominio;
             
             document.getElementById('finalEmail').value = correoActual;
             document.getElementById('btnCopiar').classList.remove('hidden');
-            document.getElementById('msgList').innerHTML = `<p class="animate-pulse text-blue-300">Escaneando servidor para:<br><b>${correoActual}</b></p>`;
+            document.getElementById('msgList').innerHTML = `<p class="animate-pulse text-blue-400">Escaneando servidor para:<br><b class="text-white">${correoActual}</b></p>`;
+            
+            document.getElementById('statusText').innerText = "Sincronizando...";
             
             if(intervalo) clearInterval(intervalo);
             buscarMensajes();
@@ -74,7 +70,7 @@
             const [user, dom] = correoActual.split('@');
             const dot = document.getElementById('dot');
             
-            // Proxy para evitar errores de red en GitHub Pages
+            // Proxy Ultra-Rápido para saltar el bloqueo de GitHub
             const proxy = "https://api.allorigins.win/get?url=";
             const api = encodeURIComponent(`https://www.1secmail.com/api/v1/?action=getMessages&login=${user}&domain=${dom}&cb=${Date.now()}`);
 
@@ -84,28 +80,30 @@
                 const data = JSON.parse(json.contents);
                 const lista = document.getElementById('msgList');
 
-                dot.className = "h-2 w-2 bg-green-500 rounded-full mr-2";
+                dot.className = "h-2 w-2 bg-green-500 rounded-full mr-2 shadow-[0_0_8px_#22c55e]";
+                document.getElementById('statusText').innerText = "Conectado";
 
                 if(data && data.length > 0) {
                     lista.innerHTML = "";
                     data.forEach(m => {
                         lista.innerHTML += `
-                            <div class="p-4 bg-slate-700 border-l-4 border-green-500 rounded text-left shadow-xl animate-bounce">
-                                <p class="text-[10px] text-green-400 font-bold uppercase italic font-sans">¡Mensaje Recibido!</p>
-                                <p class="text-xs text-blue-200">DE: ${m.from}</p>
-                                <p class="text-sm text-white font-bold mt-1">${m.subject}</p>
+                            <div class="p-4 bg-slate-800 border-l-4 border-blue-500 rounded text-left shadow-xl animate-in fade-in zoom-in duration-300">
+                                <p class="text-[9px] text-blue-400 font-bold uppercase italic">Nuevo Mensaje</p>
+                                <p class="text-[11px] text-slate-300 font-bold">De: ${m.from}</p>
+                                <p class="text-sm text-white font-medium mt-1">${m.subject}</p>
                             </div>`;
                     });
                 }
             } catch (e) { 
                 dot.className = "h-2 w-2 bg-red-500 rounded-full mr-2";
+                document.getElementById('statusText').innerText = "Error de Red";
             }
         }
 
         function copiarTexto() {
             const email = document.getElementById('finalEmail');
             navigator.clipboard.writeText(email.value);
-            alert("¡Copiado al portapapeles!");
+            alert("¡Copiado!");
         }
     </script>
 </body>
