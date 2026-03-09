@@ -3,163 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ImgOptimizador Pro - Ahorro Real</title>
+    <title>Editor de Dimensiones - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#0f172a] text-slate-200 font-sans min-h-screen flex flex-col items-center py-10 px-4">
+<body class="bg-[#0b0f1a] text-slate-200 min-h-screen flex flex-col items-center py-10 px-4 font-sans">
 
-    <div class="w-full max-w-2xl bg-[#1e293b] p-8 rounded-3xl shadow-2xl border border-slate-700">
+    <div class="w-full max-w-2xl bg-[#161d2f] p-8 rounded-3xl shadow-2xl border border-slate-800">
         <header class="text-center mb-8">
-            <h1 class="text-3xl font-extrabold text-blue-400 mb-2 italic tracking-tight">ImgOptimizador Pro ⚡</h1>
-            <p class="text-slate-400 text-sm">Optimización profesional sin que tus datos salgan de tu PC.</p>
+            <h1 class="text-3xl font-black text-blue-500 italic tracking-tighter">RE-SIZE & COMPRESS ⚡</h1>
+            <p class="text-slate-500 text-xs uppercase font-bold mt-1">Cambia dimensiones y peso al instante</p>
         </header>
 
-        <div id="dropZone" class="border-2 border-dashed border-blue-500/40 bg-slate-900/50 rounded-2xl p-10 text-center hover:bg-slate-800/50 transition-all cursor-pointer mb-6 group">
+        <div id="dropZone" class="border-2 border-dashed border-slate-700 bg-slate-900/50 rounded-2xl p-12 text-center hover:border-blue-500 transition-all cursor-pointer mb-6">
             <input type="file" id="fileInput" class="hidden" accept="image/*">
-            <div class="flex flex-col items-center pointer-events-none">
-                <span class="text-4xl mb-4 group-hover:bounce">🖼️</span>
-                <p class="text-lg font-semibold text-blue-100">Suelta tu imagen aquí</p>
-                <p class="text-xs text-slate-500 mt-2 italic">PNG, JPG o WebP</p>
-            </div>
+            <p class="text-lg font-bold">📂 Haz clic para subir o arrastra la foto</p>
         </div>
 
-        <div id="options" class="hidden space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div id="editor" class="hidden space-y-6 animate-in fade-in zoom-in duration-300">
             
-            <div class="grid grid-cols-3 gap-2 text-center mb-4">
-                <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700">
-                    <p class="text-[9px] uppercase font-bold text-slate-500">Original</p>
-                    <p id="originalSize" class="text-sm font-mono text-white">-</p>
-                </div>
-                <div class="bg-blue-500/10 p-3 rounded-xl border border-blue-500/30">
-                    <p class="text-[9px] uppercase font-bold text-blue-400">Optimizado</p>
-                    <p id="finalSize" class="text-sm font-mono text-blue-300">-</p>
-                </div>
-                <div class="bg-green-500/10 p-3 rounded-xl border border-green-500/30">
-                    <p class="text-[9px] uppercase font-bold text-green-400">Ahorro</p>
-                    <p id="savings" class="text-sm font-mono text-green-300">0%</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                    <label class="block text-[10px] font-bold text-blue-300 uppercase mb-2">Formato de Salida</label>
-                    <select id="formatSelect" onchange="calcularPesoFinal()" class="w-full bg-slate-900 border border-slate-600 rounded-lg p-2 outline-none text-sm">
-                        <option value="image/webp">WebP (Más ligero)</option>
-                        <option value="image/jpeg">JPEG (Universal)</option>
-                        <option value="image/png">PNG (Sin pérdida)</option>
-                    </select>
-                </div>
-                <div class="bg-slate-800 p-4 rounded-xl border border-slate-700">
-                    <div class="flex justify-between mb-2">
-                        <label class="text-[10px] font-bold text-blue-300 uppercase">Calidad</label>
-                        <span id="qualityValue" class="text-[10px] font-bold text-white bg-blue-600 px-2 rounded">80%</span>
+            <div class="bg-slate-900/80 p-6 rounded-2xl border-2 border-blue-500/20">
+                <h2 class="text-blue-400 text-xs font-black uppercase mb-4 tracking-widest">📐 Ajustar Dimensiones (Tamaño)</h2>
+                
+                <div class="grid grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-2">Ancho (Píxeles)</label>
+                        <input type="number" id="anchoInput" class="w-full bg-slate-950 border-2 border-slate-800 rounded-xl p-4 text-xl font-mono text-blue-400 focus:border-blue-500 outline-none transition" placeholder="Ancho">
                     </div>
-                    <input type="range" id="qualityRange" min="0.1" max="1.0" step="0.05" value="0.8" class="w-full accent-blue-500 cursor-pointer" oninput="updateQualityUI()">
+                    <div>
+                        <label class="block text-[10px] text-slate-500 uppercase font-bold mb-2">Alto (Píxeles)</label>
+                        <input type="number" id="altoInput" class="w-full bg-slate-950 border-2 border-slate-800 rounded-xl p-4 text-xl font-mono text-blue-400 focus:border-blue-500 outline-none transition" placeholder="Alto">
+                    </div>
+                </div>
+
+                <div class="mt-4 flex items-center justify-end">
+                    <label class="flex items-center text-xs text-slate-400 cursor-pointer">
+                        <input type="checkbox" id="mantenerProporcion" checked class="mr-2 w-4 h-4 accent-blue-500">
+                        Mantener forma original
+                    </label>
                 </div>
             </div>
 
-            <button onclick="descargarImagen()" class="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-xl font-bold transition shadow-lg uppercase tracking-widest active:scale-95 text-lg">
-                ⬇️ Descargar Imagen
-            </button>
-            <button onclick="location.reload()" class="w-full text-slate-500 text-[10px] uppercase font-bold hover:text-white transition">Procesar otra diferente</button>
-        </div>
+            <div class="bg-slate-900/80 p-6 rounded-2xl border border-slate-800">
+                <div class="flex justify-between mb-4">
+                    <h2 class="text-slate-400 text-xs font-black uppercase tracking-widest">💎 Calidad y Formato</h2>
+                    <span id="calidadTag" class="bg-blue-600 text-[10px] px-2 py-0.5 rounded-full font-bold">80%</span>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <select id="formato" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm outline-none">
+                        <option value="image/webp">Formato WebP (Recomendado)</option>
+                        <option value="image/jpeg">Formato JPG</option>
+                        <option value="image/png">Formato PNG</option>
+                    </select>
+                    <input type="range" id="calidadRange" min="0.1" max="1.0" step="0.05" value="0.8" class="w-full accent-blue-500">
+                </div>
+            </div>
 
-        <div id="previewContainer" class="hidden mt-8 border-t border-slate-700 pt-6">
-            <img id="imagePreview" class="max-h-60 mx-auto rounded-lg shadow-2xl border border-slate-700">
+            <div class="flex flex-col gap-3 pt-4">
+                <div class="flex justify-between text-[10px] font-bold uppercase text-slate-500 px-2">
+                    <span>Peso Original: <span id="pesoOriginal" class="text-slate-300">-</span></span>
+                    <span>Peso Final Est: <span id="pesoFinal" class="text-blue-400">-</span></span>
+                </div>
+                <button onclick="descargar()" class="w-full bg-blue-600 hover:bg-blue-500 py-5 rounded-2xl font-black text-xl uppercase tracking-tighter transition-all active:scale-95 shadow-[0_0_20px_rgba(37,99,235,0.3)]">
+                    Descargar Ahora ⬇️
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('fileInput');
-        const options = document.getElementById('options');
-        const imagePreview = document.getElementById('imagePreview');
-        const previewContainer = document.getElementById('previewContainer');
+        const dropZone = document.getElementById('dropZone'), fileInput = document.getElementById('fileInput'), editor = document.getElementById('editor');
+        const anchoInput = document.getElementById('anchoInput'), altoInput = document.getElementById('altoInput'), mantener = document.getElementById('mantenerProporcion');
+        const pesoOriginal = document.getElementById('pesoOriginal'), pesoFinal = document.getElementById('pesoFinal');
+        const calidadRange = document.getElementById('calidadRange'), calidadTag = document.getElementById('calidadTag'), formato = document.getElementById('formato');
         
-        let originalFile = null;
-        let imgObj = new Image();
+        let img = new Image(), ratio = 0, originalFile = null;
 
-        // Herramienta para formatear bytes
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        // Abrir archivos
+        dropZone.onclick = () => fileInput.click();
+        fileInput.onchange = (e) => cargar(e.target.files[0]);
+
+        function cargar(file) {
+            if (!file) return;
+            originalFile = file;
+            pesoOriginal.innerText = (file.size / 1024).toFixed(1) + " KB";
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                img.src = e.target.result;
+                img.onload = () => {
+                    ratio = img.width / img.height;
+                    anchoInput.value = img.width;
+                    altoInput.value = img.height;
+                    dropZone.classList.add('hidden');
+                    editor.classList.remove('hidden');
+                    actualizarStats();
+                };
+            };
+            reader.readAsDataURL(file);
         }
 
-        dropZone.onclick = () => fileInput.click();
-
-        fileInput.onchange = (e) => handleFiles(e.target.files[0]);
-
-        dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('bg-blue-500/10'); };
-        dropZone.ondragleave = () => dropZone.classList.remove('bg-blue-500/10');
-        dropZone.ondrop = (e) => {
-            e.preventDefault();
-            handleFiles(e.dataTransfer.files[0]);
+        // Lógica de dimensiones
+        anchoInput.oninput = () => {
+            if (mantener.checked) altoInput.value = Math.round(anchoInput.value / ratio);
+            actualizarStats();
+        };
+        altoInput.oninput = () => {
+            if (mantener.checked) anchoInput.value = Math.round(altoInput.value * ratio);
+            actualizarStats();
         };
 
-        function handleFiles(file) {
-            if (file && file.type.startsWith('image/')) {
-                originalFile = file;
-                document.getElementById('originalSize').innerText = formatBytes(file.size);
-                
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    imgObj.src = e.target.result;
-                    imgObj.onload = () => {
-                        imagePreview.src = imgObj.src;
-                        dropZone.classList.add('hidden');
-                        options.classList.remove('hidden');
-                        previewContainer.classList.remove('hidden');
-                        calcularPesoFinal();
-                    };
-                };
-                reader.readAsDataURL(file);
-            }
-        }
+        calidadRange.oninput = () => {
+            calidadTag.innerText = Math.round(calidadRange.value * 100) + "%";
+            actualizarStats();
+        };
+        formato.onchange = actualizarStats;
 
-        function updateQualityUI() {
-            const val = document.getElementById('qualityRange').value;
-            document.getElementById('qualityValue').innerText = Math.round(val * 100) + "%";
-            calcularPesoFinal();
-        }
-
-        function calcularPesoFinal() {
+        function actualizarStats() {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = imgObj.width;
-            canvas.height = imgObj.height;
-            ctx.drawImage(imgObj, 0, 0);
-
-            const format = document.getElementById('formatSelect').value;
-            const quality = parseFloat(document.getElementById('qualityRange').value);
-
-            // Calculamos el peso sin descargar
+            canvas.width = anchoInput.value || 1;
+            canvas.height = altoInput.value || 1;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            
             canvas.toBlob((blob) => {
-                const size = blob.size;
-                document.getElementById('finalSize').innerText = formatBytes(size);
-                
-                // Cálculo de ahorro
-                const ahorrado = ((originalFile.size - size) / originalFile.size) * 100;
-                const savingsEl = document.getElementById('savings');
-                savingsEl.innerText = (ahorrado > 0 ? Math.round(ahorrado) : 0) + "%";
-            }, format, quality);
+                if (blob) pesoFinal.innerText = (blob.size / 1024).toFixed(1) + " KB";
+            }, formato.value, parseFloat(calidadRange.value));
         }
 
-        function descargarImagen() {
+        function descargar() {
             const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = imgObj.width;
-            canvas.height = imgObj.height;
-            ctx.drawImage(imgObj, 0, 0);
-
-            const format = document.getElementById('formatSelect').value;
-            const quality = parseFloat(document.getElementById('qualityRange').value);
+            canvas.width = anchoInput.value;
+            canvas.height = altoInput.value;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
             
             const link = document.createElement('a');
-            link.download = `imagen-optimizada.${format.split('/')[1]}`;
-            link.href = canvas.toDataURL(format, quality);
+            link.download = "foto-redimensionada." + formato.value.split('/')[1];
+            link.href = canvas.toDataURL(formato.value, parseFloat(calidadRange.value));
             link.click();
         }
     </script>
